@@ -392,6 +392,88 @@ class FourLeadsAPI
     }
 
     /**
+     * Creates a new global field
+     * @param stdClass $globalField see the properties on $this->getGlobalFieldList()
+     * @return stdClass Response Object
+     */
+    public function createGlobalField(stdClass $globalField)
+    {
+        $path = '/globalFields';
+
+        $url = $this->buildUrl($path);
+        $response = $this->makeRequest('POST', $url, $globalField);
+        return $response;
+    }
+
+    /**
+     * Update global field
+     * @param int $globalFieldId the id of the field to update
+     * @param stdClass $globalField see the properties on $this->getGlobalFieldList()
+     * @return stdClass Response Object
+     */
+    public function updateGlobalField(int $globalFieldId, stdClass $globalField)
+    {
+        $path = '/globalFields/' . urlencode($globalFieldId);
+
+        $url = $this->buildUrl($path);
+        $response = $this->makeRequest('PUT', $url, $globalField);
+        return $response;
+    }
+
+    /**
+     * Delete global field. All saved connected values will be lost.
+     * @param int $globalFieldId the id of the field to update
+     * @return stdClass Response Object
+     */
+    public function deleteGlobalField(int $globalFieldId)
+    {
+        $path = '/globalFields/' . urlencode($globalFieldId);
+
+        $url = $this->buildUrl($path);
+        $response = $this->makeRequest('DELETE', $url);
+        return $response;
+    }
+
+    /**
+     * Get the value of a global field which is set for the given contact.
+     * @param int $globalFieldId the id of the field
+     * @param int $contactId the id of the contact
+     * @return stdClass Response Object
+     */
+    public function getGlobalFieldValue(int $globalFieldId, int $contactId)
+    {
+        $path = '/globalFields/' . urlencode($globalFieldId) . '/getValue';
+        $queryParams = [
+            'contactId' => $contactId,
+        ];
+        $url = $this->buildUrl($path, $queryParams);
+        $response = $this->makeRequest('GET', $url);
+        return $response;
+    }
+
+    /**
+     * Set the value of a global field which is set for the given contact.
+     * @param int $globalFieldId the id of the field
+     * @param int $contactId the id of the contact
+     * @param mixed $value The value to set
+     * @param bool $doTriggers If true alle events which listen on field value changes will be fired if value changes.
+     * @param bool $overwrite if false only empty values will be overwriten. if true all values will be overwritten.
+     * @return stdClass Response Object
+     */
+    public function setGlobalFieldValue(int $globalFieldId, int $contactId, $value, bool $doTriggers = true, bool $overwrite = true)
+    {
+        $path = '/globalFields/' . urlencode($globalFieldId) . '/setValue';
+        $body = new stdClass();
+        $body->contactId = $contactId;
+        $body->value = $value;
+        $body->doTriggers = $doTriggers;
+        $body->overwrite = $overwrite;
+        $url = $this->buildUrl($path);
+        $response = $this->makeRequest('POST', $url, $body);
+        return $response;
+    }
+
+    /**
      * Get a optin case by id.
      * @param int $id 4leads internal id of optin case
      * @return stdClass Response Object
