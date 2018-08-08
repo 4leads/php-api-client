@@ -7,6 +7,7 @@
  * @license   https://opensource.org/licenses/MIT The MIT License
  */
 
+namespace FourLeads;
 /**
  * Interface to the 4leads Web API
  */
@@ -87,7 +88,7 @@ class FourLeadsAPI
      * @param string $searchString A basic searchstring matching firstname, lastname and email
      * @param int $mode Mode of the results. Possible values are 1,2 or null for default
      * @param int $status Filter the status of the contacts (1-6) (deprecated)
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function getContactList(int $pageNum = 0, int $pageSize = 50, string $searchString = "", int $mode = null, int $status = null)
     {
@@ -132,10 +133,10 @@ class FourLeadsAPI
      *
      * @param string $method the HTTP verb
      * @param string $url the final url to call
-     * @param stdClass $body request body
+     * @param \stdClass $body request body
      * @param array $headers any additional request headers
      *
-     * @return stdClass object
+     * @return \stdClass object
      */
     public function makeRequest($method, $url, $body = null, $headers = null)
     {
@@ -162,7 +163,7 @@ class FourLeadsAPI
      * this function does not mutate any private variables
      *
      * @param string $method
-     * @param stdClass $body
+     * @param \stdClass $body
      * @param array $headers
      *
      * @return array
@@ -199,11 +200,11 @@ class FourLeadsAPI
      * @param resource $channel the curl resource
      * @param string $content
      *
-     * @return stdClass object
+     * @return \stdClass object
      */
     private function parseResponse($channel, $content)
     {
-        $response = new stdClass();
+        $response = new \stdClass();
         $response->headerSize = curl_getinfo($channel, CURLINFO_HEADER_SIZE);
         $response->statusCode = curl_getinfo($channel, CURLINFO_HTTP_CODE);
 
@@ -221,7 +222,7 @@ class FourLeadsAPI
      * @param int $pageNum Which page of the results schould be retrieved (starting with 0)
      * @param int $pageSize Number of results per page (max 200)
      * @param string $searchString a basic searchstring matching name
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function getTagList(int $pageNum = 0, int $pageSize = 50, string $searchString = "")
     {
@@ -243,7 +244,7 @@ class FourLeadsAPI
      * @param int $pageNum Which page of the results schould be retrieved (starting with 0)
      * @param int $pageSize Number of results per page (max 200)
      * @param string $searchString a basic searchstring matching name
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function getOptInList(int $pageNum = 0, int $pageSize = 50, string $searchString = "")
     {
@@ -265,7 +266,7 @@ class FourLeadsAPI
      * @param int $pageNum Which page of the results schould be retrieved (starting with 0)
      * @param int $pageSize Number of results per page (max 200)
      * @param string $searchString a basic searchstring matching name
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function getCampaignList(int $pageNum = 0, int $pageSize = 50, string $searchString = "")
     {
@@ -287,7 +288,7 @@ class FourLeadsAPI
      * @param int $pageNum Which page of the results schould be retrieved (starting with 0)
      * @param int $pageSize Number of results per page (max 200)
      * @param string $searchString a basic searchstring matching name
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function getGlobalFieldList(int $pageNum = 0, int $pageSize = 50, string $searchString = "")
     {
@@ -309,7 +310,7 @@ class FourLeadsAPI
      * @param int $pageNum Which page of the results schould be retrieved (starting with 0)
      * @param int $pageSize Number of results per page (max 200)
      * @param string $searchString a basic searchstring matching name
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function getOptInCaseList(int $pageNum = 0, int $pageSize = 50, string $searchString = "")
     {
@@ -329,7 +330,7 @@ class FourLeadsAPI
     /**
      * Get a contact by id.
      * @param int $id 4leads internal id of contact
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function getContact(int $id)
     {
@@ -342,7 +343,7 @@ class FourLeadsAPI
     /**
      * Get a tag by id.
      * @param int $id 4leads internal id of tag
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function getTag(int $id)
     {
@@ -355,7 +356,7 @@ class FourLeadsAPI
     /**
      * Get a optin by id.
      * @param int $id 4leads internal id of optin
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function getOptIn(int $id)
     {
@@ -368,7 +369,7 @@ class FourLeadsAPI
     /**
      * Get a campaign by id.
      * @param int $id 4leads internal id of campaign
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function getCampaign(int $id)
     {
@@ -381,7 +382,7 @@ class FourLeadsAPI
     /**
      * Get a global field by id.
      * @param int $id 4leads internal id of the global field
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function getGlobalField(int $id)
     {
@@ -393,10 +394,10 @@ class FourLeadsAPI
 
     /**
      * Creates a new global field
-     * @param stdClass $globalField see the properties on $this->getGlobalFieldList()
-     * @return stdClass Response Object
+     * @param \stdClass $globalField see the properties on $this->getGlobalFieldList()
+     * @return \stdClass Response Object
      */
-    public function createGlobalField(stdClass $globalField)
+    public function createGlobalField(\stdClass $globalField)
     {
         $path = '/globalFields';
 
@@ -408,10 +409,10 @@ class FourLeadsAPI
     /**
      * Update global field
      * @param int $globalFieldId the id of the field to update
-     * @param stdClass $globalField see the properties on $this->getGlobalFieldList()
-     * @return stdClass Response Object
+     * @param \stdClass $globalField see the properties on $this->getGlobalFieldList()
+     * @return \stdClass Response Object
      */
-    public function updateGlobalField(int $globalFieldId, stdClass $globalField)
+    public function updateGlobalField(int $globalFieldId, \stdClass $globalField)
     {
         $path = '/globalFields/' . urlencode($globalFieldId);
 
@@ -423,7 +424,7 @@ class FourLeadsAPI
     /**
      * Delete global field. All saved connected values will be lost.
      * @param int $globalFieldId the id of the field to update
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function deleteGlobalField(int $globalFieldId)
     {
@@ -438,7 +439,7 @@ class FourLeadsAPI
      * Get the value of a global field which is set for the given contact.
      * @param int $globalFieldId the id of the field
      * @param int $contactId the id of the contact
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function getGlobalFieldValue(int $globalFieldId, int $contactId)
     {
@@ -458,12 +459,12 @@ class FourLeadsAPI
      * @param mixed $value The value to set
      * @param bool $doTriggers If true alle events which listen on field value changes will be fired if value changes.
      * @param bool $overwrite if false only empty values will be overwriten. if true all values will be overwritten.
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function setGlobalFieldValue(int $globalFieldId, int $contactId, $value, bool $doTriggers = true, bool $overwrite = true)
     {
         $path = '/globalFields/' . urlencode($globalFieldId) . '/setValue';
-        $body = new stdClass();
+        $body = new \stdClass();
         $body->contactId = $contactId;
         $body->value = $value;
         $body->doTriggers = $doTriggers;
@@ -476,7 +477,7 @@ class FourLeadsAPI
     /**
      * Get a optin case by id.
      * @param int $id 4leads internal id of optin case
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function getOptInCase(int $id)
     {
@@ -489,12 +490,12 @@ class FourLeadsAPI
     /**
      * Create a new Tag.
      * @param string $name The name of the Tag
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function createTag(string $name)
     {
         $path = '/tags';
-        $body = new stdClass();
+        $body = new \stdClass();
         $body->name = $name;
         $url = $this->buildUrl($path);
         $response = $this->makeRequest('POST', $url, $body);
@@ -505,12 +506,12 @@ class FourLeadsAPI
      * Update a Tag.
      * @param int $id the id of the tag
      * @param string $name The name of the Tag
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function updateTag(int $id, string $name)
     {
         $path = '/tags/' . urlencode($id);
-        $body = new stdClass();
+        $body = new \stdClass();
         $body->name = $name;
         $url = $this->buildUrl($path);
         $response = $this->makeRequest('PUT', $url, $body);
@@ -520,7 +521,7 @@ class FourLeadsAPI
     /**
      * Delete a Tag.
      * @param int $id the id of the tag
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function deleteTag(int $id)
     {
@@ -535,13 +536,13 @@ class FourLeadsAPI
      * @param int $contactId the id of the contact
      * @param int $optinCaseId the id of the
      * @param string $ip The IP-Adresse to log who granted the opt-in-case, leave null if granted by system
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function grantOptInCase(int $contactId, int $optinCaseId, string $ip = null)
     {
         $path = '/opt-in-cases/' . urlencode($optinCaseId) . '/grant';
         $url = $this->buildUrl($path);
-        $body = new stdClass();
+        $body = new \stdClass();
         $body->contactId = $contactId;
         if (isset($ip)) {
             $body->ip = $ip;
@@ -554,13 +555,13 @@ class FourLeadsAPI
      * Sends an opt-in email to confirm the email address.
      * @param int $contactId the id of the contact
      * @param int $optinId the id of the opt-in-process
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function sendOptIn(int $contactId, int $optinId)
     {
         $path = '/opt-ins/' . urlencode($optinId) . '/send';
         $url = $this->buildUrl($path);
-        $body = new stdClass();
+        $body = new \stdClass();
         $body->contactId = $contactId;
         $response = $this->makeRequest('POST', $url, $body);
         return $response;
@@ -570,13 +571,13 @@ class FourLeadsAPI
      * Starts a campaign for the contact.
      * @param int $contactId the id of the contact
      * @param int $campaignId the id of the campaign
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function startCampaign(int $contactId, int $campaignId)
     {
         $path = '/campaigns/' . urlencode($campaignId) . '/start';
         $url = $this->buildUrl($path);
-        $body = new stdClass();
+        $body = new \stdClass();
         $body->contactId = $contactId;
         $response = $this->makeRequest('POST', $url, $body);
         return $response;
@@ -586,13 +587,13 @@ class FourLeadsAPI
      * Stops a campaign for the contact.
      * @param int $contactId the id of the contact
      * @param int $campaignId the id of the campaign
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function stopCampaign(int $contactId, int $campaignId)
     {
         $path = '/campaigns/' . urlencode($campaignId) . '/stop';
         $url = $this->buildUrl($path);
-        $body = new stdClass();
+        $body = new \stdClass();
         $body->contactId = $contactId;
         $response = $this->makeRequest('POST', $url, $body);
         return $response;
@@ -603,13 +604,13 @@ class FourLeadsAPI
      * @param int $contactId the id of the contact
      * @param int $optinCaseId the id of the
      * @param string $ip The IP-Adresse to log who revoked the opt-in-case, leave null if revoked by system
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function revokeOptInCase(int $contactId, int $optinCaseId, string $ip = null)
     {
         $path = '/opt-in-cases/' . urlencode($optinCaseId) . '/revoke';
         $url = $this->buildUrl($path);
-        $body = new stdClass();
+        $body = new \stdClass();
         $body->contactId = $contactId;
         if (isset($ip)) {
             $body->ip = $ip;
@@ -622,13 +623,13 @@ class FourLeadsAPI
      * Add a Tag to a contact
      * @param int $contactId the id of the contact
      * @param int $tagId the id of the tag
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function addTag(int $contactId, int $tagId)
     {
         $path = '/contacts/' . urlencode($contactId) . '/addTag';
         $url = $this->buildUrl($path);
-        $body = new stdClass();
+        $body = new \stdClass();
         $body->tagId = $tagId;
         $response = $this->makeRequest('POST', $url, $body);
         return $response;
@@ -638,13 +639,13 @@ class FourLeadsAPI
      * Remove a Tag to a contact
      * @param int $contactId the id of the contact
      * @param int $tagId the id of the tag
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function removeTag(int $contactId, int $tagId)
     {
         $path = '/contacts/' . urlencode($contactId) . '/removeTag';
         $url = $this->buildUrl($path);
-        $body = new stdClass();
+        $body = new \stdClass();
         $body->tagId = $tagId;
         $response = $this->makeRequest('POST', $url, $body);
         return $response;
@@ -653,7 +654,7 @@ class FourLeadsAPI
     /**
      * Get a contact by email. Might be deprecated in future version if contacts can hold multiple emails
      * @param string $email email of the contact
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function getContactByEmail(string $email)
     {
@@ -665,12 +666,12 @@ class FourLeadsAPI
 
     /**
      * Create a new Contact.
-     * @param stdClass $contact the object holding the properties to set. See $this->getContact() for field names
+     * @param \stdClass $contact the object holding the properties to set. See $this->getContact() for field names
      * @param bool $noUpdate If true a duplicate email with result in error otherwise the existing contact will be
      *     updated
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
-    public function createContact(stdClass $contact, bool $noUpdate = false)
+    public function createContact(\stdClass $contact, bool $noUpdate = false)
     {
         $path = '/contacts';
         if ($noUpdate) {
@@ -684,10 +685,10 @@ class FourLeadsAPI
     /**
      * Update an existing contact.
      * @param int $id 4leads internal id of contact
-     * @param stdClass $contact the object holding the properties to set. See $this->getContact() for field names
-     * @return stdClass Response Object
+     * @param \stdClass $contact the object holding the properties to set. See $this->getContact() for field names
+     * @return \stdClass Response Object
      */
-    public function updateContact(int $id, stdClass $contact)
+    public function updateContact(int $id, \stdClass $contact)
     {
         $path = '/contacts/' . urlencode($id);
         $url = $this->buildUrl($path);
@@ -698,7 +699,7 @@ class FourLeadsAPI
     /**
      * delete an existing contact.
      * @param int $id 4leads internal id of contact
-     * @return stdClass Response Object
+     * @return \stdClass Response Object
      */
     public function deleteContact(int $id)
     {
