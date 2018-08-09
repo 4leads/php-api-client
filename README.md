@@ -14,7 +14,7 @@
 
 ## Install Package
 
-Add SendGrid to your `composer.json` file. If you are not using [Composer](http://getcomposer.org), we highly recommend it. It's an excellent way to manage dependencies in your PHP application.
+Add 4leads to your `composer.json` file. If you are not using [Composer](http://getcomposer.org), we highly recommend it. It's an excellent way to manage dependencies in your PHP application.
 
 ```sh
 composer require 4leads/php-api-client
