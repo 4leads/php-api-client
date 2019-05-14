@@ -23,4 +23,11 @@ class Contact
     const EMAIL_STATUS_BOUNCED = 5;
     //email address is permanent suspended (hard spam report)
     const EMAIL_STATUS_SUSPENDED = 6;
+    //general opt-out for all processes -> needs new opt-in
+    const EMAIL_STATUS_OPTOUT = 7;
+    //
+    //
+    //embedOptions
+    const EMBED_TAGS = 'Tags';
+    const EMBED_FIELDS = 'GlobalFields';
 }

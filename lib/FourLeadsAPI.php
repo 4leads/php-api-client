@@ -13,7 +13,7 @@ namespace FourLeads;
  */
 class FourLeadsAPI
 {
-    const VERSION = '0.9.0';
+    const VERSION = '0.9.4';
     const TOO_MANY_REQUESTS_HTTP_CODE = 429;
 
     //Client properties
@@ -176,6 +176,7 @@ class FourLeadsAPI
                 CURLOPT_CUSTOMREQUEST => strtoupper($method),
                 CURLOPT_SSL_VERIFYPEER => true,
                 CURLOPT_FAILONERROR => false,
+                CURLOPT_USERAGENT => '4leads php-cli-client,v' . self::VERSION,
             ] + $this->curlOptions;
 
         if (isset($headers)) {
@@ -330,11 +331,44 @@ class FourLeadsAPI
     /**
      * Get a contact by id.
      * @param int $id 4leads internal id of contact
+     * @param array $embed array for some Options to embed additional data into the contact-object.
      * @return \stdClass Response Object
      */
-    public function getContact(int $id)
+    public function getContact(int $id, array $embed = [])
     {
         $path = '/contacts/' . urlencode($id);
+        $queryParams = [];
+        if (count($embed)) {
+            $queryParams['embed'] = $embed;
+        }
+        $url = $this->buildUrl($path, $queryParams);
+        $response = $this->makeRequest('GET', $url);
+        return $response;
+    }
+
+    /**
+     * Get a List of GlobalFields which have a value for this contact. The value will be in the "_value" field of each
+     * field-object
+     * @param int|string $idOrEmail 4leads internal id of contact (recommended) or email (fallback)
+     * @return \stdClass Response Object
+     */
+    public function getContactFields($idOrEmail)
+    {
+        $path = '/contacts/' . urlencode($idOrEmail) . '/getFieldList';
+        $url = $this->buildUrl($path);
+        $response = $this->makeRequest('GET', $url);
+        return $response;
+    }
+
+
+    /**
+     * Get a List of Tags which ar active for this contact
+     * @param int|string $idOrEmail 4leads internal id of contact (recommended) or email (fallback)
+     * @return \stdClass Response Object
+     */
+    public function getContactTags($idOrEmail)
+    {
+        $path = '/contacts/' . urlencode($idOrEmail) . '/getTagList';
         $url = $this->buildUrl($path);
         $response = $this->makeRequest('GET', $url);
         return $response;
