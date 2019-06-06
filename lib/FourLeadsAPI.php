@@ -13,7 +13,7 @@ namespace FourLeads;
  */
 class FourLeadsAPI
 {
-    const VERSION = '0.9.4';
+    const VERSION = '0.9.5';
     const TOO_MANY_REQUESTS_HTTP_CODE = 429;
 
     //Client properties
@@ -171,13 +171,15 @@ class FourLeadsAPI
     private function createCurlOptions($method, $body = null, $headers = null)
     {
         $options = [
-                CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_HEADER => true,
                 CURLOPT_CUSTOMREQUEST => strtoupper($method),
-                CURLOPT_SSL_VERIFYPEER => true,
                 CURLOPT_FAILONERROR => false,
                 CURLOPT_USERAGENT => '4leads php-cli-client,v' . self::VERSION,
-            ] + $this->curlOptions;
+            ] + $this->curlOptions
+            + [
+                CURLOPT_SSL_VERIFYPEER => true,
+                CURLOPT_RETURNTRANSFER => true,
+            ];
 
         if (isset($headers)) {
             $headers = array_merge($this->headers, $headers);
