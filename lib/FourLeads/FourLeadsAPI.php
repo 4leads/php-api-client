@@ -16,7 +16,7 @@ use stdClass;
  */
 class FourLeadsAPI
 {
-    const VERSION = '1.0.1';
+    const VERSION = '1.0.2';
     const TOO_MANY_REQUESTS_HTTP_CODE = 429;
 
     //Client properties
