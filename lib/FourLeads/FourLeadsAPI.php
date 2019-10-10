@@ -16,8 +16,9 @@ use stdClass;
  */
 class FourLeadsAPI
 {
-    const VERSION = '1.0.3';
+    const VERSION = '1.0.4';
     const TOO_MANY_REQUESTS_HTTP_CODE = 429;
+    //modes to structure the tag list
     const TAG_LIST_MODE_DEFAULT = 0;
     const TAG_LIST_MODE_IDS = 1;
     const TAG_LIST_MODE_SIMPLE = 2;
@@ -262,6 +263,40 @@ class FourLeadsAPI
         $url = $this->buildUrl($path, $queryParams);
         $response = $this->makeRequest('GET', $url);
 
+        return $response;
+    }
+
+    /**
+     *
+     * @param int|string $integrationId
+     * param string $token
+     * @param array $tagIds max 20 ids in one request
+     */
+    public function addSyncTags($integrationId, string $token, array $tagIds)
+    {
+        $path = '/integrations/fl-plugin/' . urlencode($integrationId) . '/tags';
+        $body = new stdClass();
+        $body->token = $token;
+        $body->tagIds = $tagIds;
+        $url = $this->buildUrl($path);
+        $response = $this->makeRequest('POST', $url, $body);
+        return $response;
+    }
+
+    /**
+     *
+     * @param int|string $integrationId
+     * param string $token
+     * @param array $tagIds max 20 ids in one request
+     */
+    public function removeSyncTags($integrationId, string $token, array $tagIds)
+    {
+        $path = '/integrations/fl-plugin/' . urlencode($integrationId) . '/tags';
+        $body = new stdClass();
+        $body->token = $token;
+        $body->tagIds = $tagIds;
+        $url = $this->buildUrl($path);
+        $response = $this->makeRequest('DELETE', $url, $body);
         return $response;
     }
 
