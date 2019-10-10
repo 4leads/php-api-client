@@ -16,8 +16,12 @@ use stdClass;
  */
 class FourLeadsAPI
 {
-    const VERSION = '1.0.2';
+    const VERSION = '1.0.3';
     const TOO_MANY_REQUESTS_HTTP_CODE = 429;
+    const TAG_LIST_MODE_DEFAULT = 0;
+    const TAG_LIST_MODE_IDS = 1;
+    const TAG_LIST_MODE_SIMPLE = 2;
+
 
     //Client properties
     /**
@@ -239,17 +243,22 @@ class FourLeadsAPI
      * @param int $pageNum Which page of the results schould be retrieved (starting with 0)
      * @param int $pageSize Number of results per page (max 200)
      * @param string $searchString a basic searchstring matching name
+     * @param int $mode Defines how the list should be structured
      * @return stdClass Response Object
      */
-    public function getTagList(int $pageNum = 0, int $pageSize = 50, string $searchString = "")
+    public function getTagList(int $pageNum = 0, int $pageSize = 50, string $searchString = "", $mode = self::TAG_LIST_MODE_DEFAULT)
     {
         $path = '/tags';
 
         $queryParams = [];
+        if ($mode != self::TAG_LIST_MODE_DEFAULT) {
+            $queryParams['mode'] = $mode;
+        }
         $queryParams['pageNum'] = $pageNum;
         $queryParams['pageSize'] = $pageSize;
-        $queryParams['searchString'] = $searchString;
-
+        if (strlen($searchString)) {
+            $queryParams['searchString'] = $searchString;
+        }
         $url = $this->buildUrl($path, $queryParams);
         $response = $this->makeRequest('GET', $url);
 
@@ -526,7 +535,7 @@ class FourLeadsAPI
 
     /**
      * Set multiple values for several global fields on this contact.
-     * Array if fields should be created by GlobalField::addToFieldList(...)
+     * Array of fields should be created by GlobalField::addToFieldList(...)
      * @param int $contactId the id of the contact
      * @param array $fieldList array of FieldValueSet Objects !!not more than 20 Objects allowed!!
      * @return stdClass
