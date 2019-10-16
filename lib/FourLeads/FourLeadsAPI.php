@@ -16,7 +16,7 @@ use stdClass;
  */
 class FourLeadsAPI
 {
-    const VERSION = '1.0.4';
+    const VERSION = '1.0.5';
     const TOO_MANY_REQUESTS_HTTP_CODE = 429;
     //modes to structure the tag list
     const TAG_LIST_MODE_DEFAULT = 0;
@@ -228,6 +228,24 @@ class FourLeadsAPI
     }
 
     /**
+     * Check which of the given tags are set for the contact
+     * @param int|string $idOrEmail 4leads internal id of contact (recommended) or email (fallback)
+     * @param array $tagIds array of numeric tagIds
+     * @return stdClass Response Object
+     */
+    public function compareContactTags($idOrEmail, array $tagIds)
+    {
+        $path = '/contacts/' . urlencode($idOrEmail) . '/compareTagList';
+        $queryParams = [];
+        foreach ($tagIds as $index => $tagId) {
+            $queryParams['tagIds[' . $index . ']'] = $tagId;
+        }
+        $url = $this->buildUrl($path, $queryParams);
+        $response = $this->makeRequest('GET', $url, $queryParams);
+        return $response;
+    }
+
+    /**
      * Test the API-KEY
      * @return bool
      */
@@ -268,9 +286,33 @@ class FourLeadsAPI
 
     /**
      *
-     * @param int|string $integrationId
-     * param string $token
+     * @param int $pageNum
+     * @param int $pageSize
+     * @param string $searchString
      * @param array $tagIds max 20 ids in one request
+     * @return stdClass Response Object
+     */
+    public function getFormSnippets(int $pageNum = 0, int $pageSize = 100, string $searchString = '')
+    {
+        $path = '/campaigns/snippets';
+        $queryParams = [];
+
+        $queryParams['pageNum'] = $pageNum;
+        $queryParams['pageSize'] = $pageSize;
+        if (strlen($searchString)) {
+            $queryParams['searchString'] = $searchString;
+        }
+        $url = $this->buildUrl($path, $queryParams);
+        $response = $this->makeRequest('GET', $url);
+        return $response;
+    }
+
+    /**
+     *
+     * @param int|string $integrationId
+     * @param string $token
+     * @param array $tagIds max 20 ids in one request
+     * @return stdClass
      */
     public function addSyncTags($integrationId, string $token, array $tagIds)
     {
@@ -286,8 +328,9 @@ class FourLeadsAPI
     /**
      *
      * @param int|string $integrationId
-     * param string $token
+     * @param string $token
      * @param array $tagIds max 20 ids in one request
+     * @return stdClass
      */
     public function removeSyncTags($integrationId, string $token, array $tagIds)
     {
@@ -410,12 +453,19 @@ class FourLeadsAPI
      * Get a List of GlobalFields which have a value for this contact. The value will be in the "_value" field of each
      * field-object
      * @param int|string $idOrEmail 4leads internal id of contact (recommended) or email (fallback)
+     * @param array $filterIds array of field ids. if set only those fields are retrieved
      * @return stdClass Response Object
      */
-    public function getContactFields($idOrEmail)
+    public function getContactFields($idOrEmail, array $filterIds = [])
     {
         $path = '/contacts/' . urlencode($idOrEmail) . '/getFieldList';
-        $url = $this->buildUrl($path);
+        $queryParams = [];
+        if (count($filterIds)) {
+            foreach ($filterIds as $index => $id) {
+                $queryParams["fieldIds[$index]"] = $id;
+            }
+        }
+        $url = $this->buildUrl($path, $queryParams);
         $response = $this->makeRequest('GET', $url);
         return $response;
     }
