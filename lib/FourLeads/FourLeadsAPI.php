@@ -16,7 +16,7 @@ use stdClass;
  */
 class FourLeadsAPI
 {
-    const VERSION = '1.0.5';
+    const VERSION = '1.0.6';
     const TOO_MANY_REQUESTS_HTTP_CODE = 429;
     //modes to structure the tag list
     const TAG_LIST_MODE_DEFAULT = 0;
@@ -126,7 +126,7 @@ class FourLeadsAPI
      * @param array $queryParams an array of all the query parameters
      * @return string
      */
-    private function buildUrl($path, $queryParams = null)
+    public function buildUrl($path, $queryParams = null)
     {
         if (isset($queryParams) && is_array($queryParams) && count($queryParams)) {
             $path .= '?' . http_build_query($queryParams);
@@ -210,20 +210,54 @@ class FourLeadsAPI
      * @param resource $channel the curl resource
      * @param string $content
      *
-     * @return stdClass object
+     * @return FourLeadsResponse|stdClass  response object
      */
     private function parseResponse($channel, $content)
     {
-        $response = new stdClass();
+        $response = new FourLeadsResponse();
         $response->headerSize = curl_getinfo($channel, CURLINFO_HEADER_SIZE);
         $response->statusCode = curl_getinfo($channel, CURLINFO_HTTP_CODE);
 
         $response->responseBody = substr($content, $response->headerSize);
 
-        $response->responseHeaders = substr($content, 0, $response->headerSize);
-        $response->responseHeaders = explode("\n", $response->responseHeaders);
+        $headString = substr($content, 0, $response->headerSize);
+        $response->responseHeaders = explode("\n", $headString);
         $response->responseHeaders = array_map('trim', $response->responseHeaders);
 
+        return $response;
+    }
+
+    /**
+     * Trigger used by Wordpress Plugin (bulk of events)
+     * @param stdClass $body
+     * @param $integrationId
+     * @param string $token
+     * @return stdClass
+     */
+    public function wpTriggerEvents(stdClass $body, $integrationId, string $token)
+    {
+        $path = '/integrations/fl-plugin/' . urlencode($integrationId) . '/trigger-events';
+        $body->token = $token;
+        $url = $this->buildUrl($path);
+        $response = $this->makeRequest('POST', $url, $body);
+        return $response;
+    }
+
+    /**
+     * Used by Wordpress Plugin to stop Wordpress-Automation if delete inside wp
+     * @param int $automationId
+     * @param $integrationId
+     * @param string $token
+     * @return stdClass
+     */
+    public function wpStopAutomation(int $automationId, $integrationId, string $token)
+    {
+        $path = '/integrations/fl-plugin/' . urlencode($integrationId) . '/stop-automation';
+        $body = new stdClass();
+        $body->token = $token;
+        $body->automationId = $automationId;
+        $url = $this->buildUrl($path);
+        $response = $this->makeRequest('POST', $url, $body);
         return $response;
     }
 
@@ -322,6 +356,21 @@ class FourLeadsAPI
         $body->tagIds = $tagIds;
         $url = $this->buildUrl($path);
         $response = $this->makeRequest('POST', $url, $body);
+        return $response;
+    }
+
+    /**
+     * @param $integrationId
+     * @param string $token
+     * @return stdClass
+     */
+    public function getFunctionList($integrationId, string $token)
+    {
+        $path = '/integrations/fl-plugin/' . urlencode($integrationId) . '/function-list';
+        $body = new stdClass();
+        $body->token = $token;
+        $url = $this->buildUrl($path);
+        $response = $this->makeRequest('GET', $url, $body);
         return $response;
     }
 
@@ -433,11 +482,11 @@ class FourLeadsAPI
 
     /**
      * Get a contact by id.
-     * @param int $id 4leads internal id of contact
+     * @param int|string $id 4leads internal id of contact
      * @param array $embed array for some Options to embed additional data into the contact-object.
      * @return stdClass Response Object
      */
-    public function getContact(int $id, array $embed = [])
+    public function getContact($id, array $embed = [])
     {
         $path = '/contacts/' . urlencode($id);
         $queryParams = [];
