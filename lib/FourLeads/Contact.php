@@ -4,7 +4,7 @@ namespace FourLeads;
 
 /**
  * Helper class with constants.
- * Class Contact
+ * Class Contact.
  * @package FourLeads
  */
 class Contact
