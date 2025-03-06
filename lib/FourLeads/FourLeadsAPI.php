@@ -997,9 +997,10 @@ class FourLeadsAPI
      * Sets the value for a specific key
      * @param string $key
      * @param string $value
+     * @param bool $overwrite
      * @return FourLeadsResponse|stdClass
      */
-    public function setGlobalValueValue(string $key, string $value): FourLeadsResponse|stdClass
+    public function setGlobalValueValue(string $key, string $value, bool $overwrite): FourLeadsResponse|stdClass
     {
         $path = '/storage-values';
         $url = $this->buildUrl($path);
@@ -1013,7 +1014,7 @@ class FourLeadsAPI
         ];
 
         $data->options = new stdClass();
-        $data->options->overwrite = true;
+        $data->options->overwrite = $overwrite;
 
         return $this->makeRequest('POST', $url, $data);
     }
