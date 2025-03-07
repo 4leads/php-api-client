@@ -3,7 +3,6 @@
 namespace FourLeads\Endpoints;
 
 use FourLeads\FourLeadsAPI;
-use FourLeads\FourLeadsResponse;
 use stdClass;
 
 class Storage
@@ -17,9 +16,9 @@ class Storage
 
     /**
      * Returns a list of all global values
-     * @return FourLeadsResponse|stdClass
+     * @return stdClass
      */
-    public function getGlobalValuesList(): FourLeadsResponse|stdClass
+    public function getGlobalValuesList(): stdClass
     {
         $path = '/storage';
         $url = $this->client->buildUrl($path);
@@ -29,9 +28,9 @@ class Storage
     /**
      * Returns a single global value based on its specific key
      * @param string $key The unique internal identifier of the global value
-     * @return FourLeadsResponse|stdClass
+     * @return stdClass
      */
-    public function getGlobalValue(string $key): FourLeadsResponse|stdClass
+    public function getGlobalValue(string $key): stdClass
     {
         $path = '/storage/' . urlencode($key);
         $url = $this->client->buildUrl($path);
@@ -41,9 +40,9 @@ class Storage
     /**
      * Retrieves the value associated with a specific key. If no key is provided, returns a list of results
      * @param string|null $key The unique internal identifier of the global value, or null to fetch all available values.
-     * @return FourLeadsResponse|stdClass
+     * @return stdClass
      */
-    public function getGlobalValueValue(?string $key = null): FourLeadsResponse|stdClass
+    public function getGlobalValueValue(?string $key = null): stdClass
     {
         $path = '/storage-values' . ($key ? '/' . urlencode($key) : '');
         $url = $this->client->buildUrl($path);
@@ -55,9 +54,9 @@ class Storage
      * @param string $key
      * @param string $value
      * @param bool $overwrite
-     * @return FourLeadsResponse|stdClass
+     * @return stdClass
      */
-    public function setGlobalValueValue(string $key, string $value, bool $overwrite): FourLeadsResponse|stdClass
+    public function setGlobalValueValue(string $key, string $value, bool $overwrite): stdClass
     {
         $path = '/storage-values';
         $url = $this->client->buildUrl($path);
@@ -83,9 +82,9 @@ class Storage
      *  - string $typeId The associated type identifier (refer to the Global Values class for valid type IDs)
      *  - string $key The internal unique identifier for this field
      *  - string $value The assigned value of the field
-     * @return FourLeadsResponse|stdClass
+     * @return stdClass
      */
-    public function createGlobalValue(\stdClass $globalValue): FourLeadsResponse|stdClass
+    public function createGlobalValue(\stdClass $globalValue): stdClass
     {
         $path = '/storage';
         $url = $this->client->buildUrl($path);
@@ -102,9 +101,9 @@ class Storage
      *   - string $key The internal unique identifier for this field.
      *   - string $value The assigned value of the field.
      *
-     * @return FourLeadsResponse|stdClass
+     * @return stdClass
      */
-    public function updateGlobalValue(string $key, \stdClass $globalValue): FourLeadsResponse|stdClass
+    public function updateGlobalValue(string $key, \stdClass $globalValue): stdClass
     {
         $path = '/storage/' . urlencode($key);
         $url = $this->client->buildUrl($path);
@@ -114,9 +113,9 @@ class Storage
     /**
      * Deletes a global value for a specific key
      * @param string $key
-     * @return FourLeadsResponse|stdClass
+     * @return stdClass
      */
-    public function deleteGlobalValue(string $key): FourLeadsResponse|stdClass
+    public function deleteGlobalValue(string $key): stdClass
     {
         $path = '/storage/' . urlencode($key);
         $url = $this->client->buildUrl($path);
