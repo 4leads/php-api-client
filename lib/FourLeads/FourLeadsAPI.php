@@ -891,7 +891,7 @@ class FourLeadsAPI
     /**
      * @return string
      */
-    public function getHost()
+    public function getHost(): string
     {
         return $this->host;
     }
@@ -899,7 +899,7 @@ class FourLeadsAPI
     /**
      * @return array
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
@@ -907,7 +907,7 @@ class FourLeadsAPI
     /**
      * @return string|null
      */
-    public function getVersion()
+    public function getVersion(): ?string
     {
         return $this->version;
     }
@@ -915,7 +915,7 @@ class FourLeadsAPI
     /**
      * @return array
      */
-    public function getPath()
+    public function getPath(): array
     {
         return $this->path;
     }
@@ -923,19 +923,17 @@ class FourLeadsAPI
     /**
      * @return array
      */
-    public function getCurlOptions()
+    public function getCurlOptions(): array
     {
         return $this->curlOptions;
     }
 
     /**
      * Set extra options to set during curl initialization
-     *
      * @param array $options
-     *
      * @return FourLeadsAPI
      */
-    public function setCurlOptions(array $options)
+    public function setCurlOptions(array $options): static
     {
         $this->curlOptions = $options;
 
