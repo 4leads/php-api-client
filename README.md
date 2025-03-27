@@ -8,7 +8,7 @@
 
 ## Prerequisites
 
-- PHP version ^7.0
+- PHP version ^8.0
 - 4leads Account including API function
 
 ## Install Package

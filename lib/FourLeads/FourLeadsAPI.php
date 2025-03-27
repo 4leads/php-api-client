@@ -9,6 +9,8 @@
 
 namespace FourLeads;
 
+use FourLeads\Endpoints\Storage;
+use FourLeads\Endpoints\Tag;
 use stdClass;
 
 /**
@@ -18,11 +20,6 @@ class FourLeadsAPI
 {
     const VERSION = '1.0.6';
     const TOO_MANY_REQUESTS_HTTP_CODE = 429;
-    //modes to structure the tag list
-    const TAG_LIST_MODE_DEFAULT = 0;
-    const TAG_LIST_MODE_IDS = 1;
-    const TAG_LIST_MODE_SIMPLE = 2;
-
 
     //Client properties
     /**
@@ -55,6 +52,9 @@ class FourLeadsAPI
     protected $curlOptions;
     //END Client properties
 
+    public Storage $storage;
+    public Tag $tags;
+
     /**
      * Setup the HTTP Client
      *
@@ -73,6 +73,9 @@ class FourLeadsAPI
 
         $curlOptions = isset($options['curl']) ? $options['curl'] : null;
         $this->setupClient($host, $headers, '/v1', null, $curlOptions);
+
+        $this->storage = new Storage($this);
+        $this->tags = new Tag($this);
     }
 
     /**
@@ -125,9 +128,7 @@ class FourLeadsAPI
         }
         $url = $this->buildUrl($path, $queryParams);
 
-        $response = $this->makeRequest('GET', $url);
-
-        return $response;
+        return $this->makeRequest('GET', $url);
     }
 
     /**
@@ -249,8 +250,7 @@ class FourLeadsAPI
         $path = '/integrations/fl-plugin/' . urlencode($integrationId) . '/trigger-events';
         $body->token = $token;
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('POST', $url, $body);
-        return $response;
+        return $this->makeRequest('POST', $url, $body);
     }
 
     /**
@@ -267,8 +267,7 @@ class FourLeadsAPI
         $body->token = $token;
         $body->automationId = $automationId;
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('POST', $url, $body);
-        return $response;
+        return $this->makeRequest('POST', $url, $body);
     }
 
     /**
@@ -285,8 +284,7 @@ class FourLeadsAPI
             $queryParams['tagIds[' . $index . ']'] = $tagId;
         }
         $url = $this->buildUrl($path, $queryParams);
-        $response = $this->makeRequest('GET', $url, $queryParams);
-        return $response;
+        return $this->makeRequest('GET', $url, $queryParams);
     }
 
 
@@ -311,23 +309,9 @@ class FourLeadsAPI
      * @param int $mode Defines how the list should be structured
      * @return stdClass Response Object
      */
-    public function getTagList(int $pageNum = 0, int $pageSize = 50, string $searchString = "", $mode = self::TAG_LIST_MODE_DEFAULT)
+    public function getTagList(int $pageNum = 0, int $pageSize = 50, string $searchString = "", int $mode = Tag::TAG_LIST_MODE_DEFAULT): stdClass
     {
-        $path = '/tags';
-
-        $queryParams = [];
-        if ($mode != self::TAG_LIST_MODE_DEFAULT) {
-            $queryParams['mode'] = $mode;
-        }
-        $queryParams['pageNum'] = $pageNum;
-        $queryParams['pageSize'] = $pageSize;
-        if (strlen($searchString)) {
-            $queryParams['searchString'] = $searchString;
-        }
-        $url = $this->buildUrl($path, $queryParams);
-        $response = $this->makeRequest('GET', $url);
-
-        return $response;
+        return $this->tags->getTagList($pageNum, $pageSize, $searchString, $mode);
     }
 
     /**
@@ -349,8 +333,7 @@ class FourLeadsAPI
             $queryParams['searchString'] = $searchString;
         }
         $url = $this->buildUrl($path, $queryParams);
-        $response = $this->makeRequest('GET', $url);
-        return $response;
+        return $this->makeRequest('GET', $url);
     }
 
     /**
@@ -536,11 +519,9 @@ class FourLeadsAPI
      * @param int $id 4leads internal id of tag
      * @return stdClass Response Object
      */
-    public function getTag(int $id)
+    public function getTag(int $id): stdClass
     {
-        $path = '/tags/' . urlencode($id);
-        $url = $this->buildUrl($path);
-        return $this->makeRequest('GET', $url);
+        return $this->tags->getTag($id);
     }
 
     /**
@@ -564,8 +545,7 @@ class FourLeadsAPI
     {
         $path = '/campaigns/' . urlencode($id);
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('GET', $url);
-        return $response;
+        return $this->makeRequest('GET', $url);
     }
 
     /**
@@ -577,8 +557,7 @@ class FourLeadsAPI
     {
         $path = '/globalFields/' . urlencode($id);
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('GET', $url);
-        return $response;
+        return $this->makeRequest('GET', $url);
     }
 
     /**
@@ -591,8 +570,7 @@ class FourLeadsAPI
         $path = '/globalFields';
 
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('POST', $url, $globalField);
-        return $response;
+        return $this->makeRequest('POST', $url, $globalField);
     }
 
     /**
@@ -606,8 +584,7 @@ class FourLeadsAPI
         $path = '/globalFields/' . urlencode($globalFieldId);
 
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('PUT', $url, $globalField);
-        return $response;
+        return $this->makeRequest('PUT', $url, $globalField);
     }
 
     /**
@@ -620,8 +597,7 @@ class FourLeadsAPI
         $path = '/globalFields/' . urlencode($globalFieldId);
 
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('DELETE', $url);
-        return $response;
+        return $this->makeRequest('DELETE', $url);
     }
 
     /**
@@ -637,8 +613,7 @@ class FourLeadsAPI
             'contactId' => $contactId,
         ];
         $url = $this->buildUrl($path, $queryParams);
-        $response = $this->makeRequest('GET', $url);
-        return $response;
+        return $this->makeRequest('GET', $url);
     }
 
     /**
@@ -659,8 +634,7 @@ class FourLeadsAPI
         $body->doTriggers = $doTriggers;
         $body->overwrite = $overwrite;
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('POST', $url, $body);
-        return $response;
+        return $this->makeRequest('POST', $url, $body);
     }
 
     /**
@@ -677,8 +651,7 @@ class FourLeadsAPI
         $body->contactId = $contactId;
         $body->fields = $fieldList;
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('POST', $url, $body);
-        return $response;
+        return $this->makeRequest('POST', $url, $body);
     }
 
     /**
@@ -690,8 +663,7 @@ class FourLeadsAPI
     {
         $path = '/opt-in-cases/' . urlencode($id);
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('GET', $url);
-        return $response;
+        return $this->makeRequest('GET', $url);
     }
 
     /**
@@ -699,14 +671,9 @@ class FourLeadsAPI
      * @param string $name The name of the Tag
      * @return stdClass Response Object
      */
-    public function createTag(string $name)
+    public function createTag(string $name): stdClass
     {
-        $path = '/tags';
-        $body = new stdClass();
-        $body->name = $name;
-        $url = $this->buildUrl($path);
-        $response = $this->makeRequest('POST', $url, $body);
-        return $response;
+        return $this->tags->createTag($name);
     }
 
     /**
@@ -715,14 +682,9 @@ class FourLeadsAPI
      * @param string $name The name of the Tag
      * @return stdClass Response Object
      */
-    public function updateTag(int $id, string $name)
+    public function updateTag(int $id, string $name): stdClass
     {
-        $path = '/tags/' . urlencode($id);
-        $body = new stdClass();
-        $body->name = $name;
-        $url = $this->buildUrl($path);
-        $response = $this->makeRequest('PUT', $url, $body);
-        return $response;
+        return $this->tags->updateTag($id, $name);
     }
 
     /**
@@ -730,12 +692,9 @@ class FourLeadsAPI
      * @param int $id the id of the tag
      * @return stdClass Response Object
      */
-    public function deleteTag(int $id)
+    public function deleteTag(int $id): stdClass
     {
-        $path = '/tags/' . urlencode($id);
-        $url = $this->buildUrl($path);
-        $response = $this->makeRequest('DELETE', $url);
-        return $response;
+        return $this->tags->deleteTag($id);
     }
 
     /**
@@ -754,8 +713,7 @@ class FourLeadsAPI
         if (isset($ip)) {
             $body->ip = $ip;
         }
-        $response = $this->makeRequest('POST', $url, $body);
-        return $response;
+        return $this->makeRequest('POST', $url, $body);
     }
 
     /**
@@ -770,8 +728,7 @@ class FourLeadsAPI
         $url = $this->buildUrl($path);
         $body = new stdClass();
         $body->contactId = $contactId;
-        $response = $this->makeRequest('POST', $url, $body);
-        return $response;
+        return $this->makeRequest('POST', $url, $body);
     }
 
     /**
@@ -786,8 +743,7 @@ class FourLeadsAPI
         $url = $this->buildUrl($path);
         $body = new stdClass();
         $body->contactId = $contactId;
-        $response = $this->makeRequest('POST', $url, $body);
-        return $response;
+        return $this->makeRequest('POST', $url, $body);
     }
 
     /**
@@ -802,8 +758,7 @@ class FourLeadsAPI
         $url = $this->buildUrl($path);
         $body = new stdClass();
         $body->contactId = $contactId;
-        $response = $this->makeRequest('POST', $url, $body);
-        return $response;
+        return $this->makeRequest('POST', $url, $body);
     }
 
     /**
@@ -822,8 +777,7 @@ class FourLeadsAPI
         if (isset($ip)) {
             $body->ip = $ip;
         }
-        $response = $this->makeRequest('POST', $url, $body);
-        return $response;
+        return $this->makeRequest('POST', $url, $body);
     }
 
     /**
@@ -841,8 +795,7 @@ class FourLeadsAPI
         foreach ($tagIds as $tagId) {
             $body->tagIds[] = $tagId;
         }
-        $response = $this->makeRequest('POST', $url, $body);
-        return $response;
+        return $this->makeRequest('POST', $url, $body);
     }
 
     /**
@@ -860,8 +813,7 @@ class FourLeadsAPI
         foreach ($tagIds as $tagId) {
             $body->tagIds[] = $tagId;
         }
-        $response = $this->makeRequest('POST', $url, $body);
-        return $response;
+        return $this->makeRequest('POST', $url, $body);
     }
 
     /**
@@ -876,8 +828,7 @@ class FourLeadsAPI
         $url = $this->buildUrl($path);
         $body = new stdClass();
         $body->tagId = $tagId;
-        $response = $this->makeRequest('POST', $url, $body);
-        return $response;
+        return $this->makeRequest('POST', $url, $body);
     }
 
     /**
@@ -892,8 +843,7 @@ class FourLeadsAPI
         $url = $this->buildUrl($path);
         $body = new stdClass();
         $body->tagId = $tagId;
-        $response = $this->makeRequest('POST', $url, $body);
-        return $response;
+        return $this->makeRequest('POST', $url, $body);
     }
 
     /**
@@ -905,8 +855,7 @@ class FourLeadsAPI
     {
         $path = '/contacts/' . urlencode($email);
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('GET', $url);
-        return $response;
+        return $this->makeRequest('GET', $url);
     }
 
     /**
@@ -923,8 +872,7 @@ class FourLeadsAPI
             $contact->_noUpdate = true;
         }
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('POST', $url, $contact);
-        return $response;
+        return $this->makeRequest('POST', $url, $contact);
     }
 
     /**
@@ -937,8 +885,7 @@ class FourLeadsAPI
     {
         $path = '/contacts/' . urlencode($id);
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('PUT', $url, $contact);
-        return $response;
+        return $this->makeRequest('PUT', $url, $contact);
     }
 
     /**
@@ -950,14 +897,13 @@ class FourLeadsAPI
     {
         $path = '/contacts/' . urlencode($id);
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('DELETE', $url);
-        return $response;
+        return $this->makeRequest('DELETE', $url);
     }
 
     /**
      * @return string
      */
-    public function getHost()
+    public function getHost(): string
     {
         return $this->host;
     }
@@ -965,7 +911,7 @@ class FourLeadsAPI
     /**
      * @return array
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
@@ -973,7 +919,7 @@ class FourLeadsAPI
     /**
      * @return string|null
      */
-    public function getVersion()
+    public function getVersion(): ?string
     {
         return $this->version;
     }
@@ -981,7 +927,7 @@ class FourLeadsAPI
     /**
      * @return array
      */
-    public function getPath()
+    public function getPath(): array
     {
         return $this->path;
     }
@@ -989,16 +935,14 @@ class FourLeadsAPI
     /**
      * @return array
      */
-    public function getCurlOptions()
+    public function getCurlOptions(): array
     {
         return $this->curlOptions;
     }
 
     /**
      * Set extra options to set during curl initialization
-     *
      * @param array $options
-     *
      * @return FourLeadsAPI
      */
     public function setCurlOptions(array $options): static
