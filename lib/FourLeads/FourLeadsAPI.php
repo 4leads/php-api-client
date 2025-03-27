@@ -26,11 +26,13 @@ class FourLeadsAPI
 
     //Client properties
     /**
+     * Endpoint host
      * @var string
      */
     protected $host;
 
     /**
+     * CURL-Request headers
      * @var array
      */
     protected $headers;
@@ -41,11 +43,13 @@ class FourLeadsAPI
     protected $version;
 
     /**
+     * Query Path part
      * @var array
      */
     protected $path;
 
     /**
+     * curl options array
      * @var array
      */
     protected $curlOptions;
@@ -57,7 +61,7 @@ class FourLeadsAPI
      * @param string $apiKey your 4leads API Key.
      * @param array $options an array of options, currently only "host" and "curl" are implemented.
      */
-    public function __construct($apiKey, $options = [])
+    public function __construct($apiKey, array $options = [])
     {
         $headers = [
             'Authorization: Bearer ' . $apiKey,
@@ -75,12 +79,18 @@ class FourLeadsAPI
      * Initialize the client
      *
      * @param string $host the base url (e.g. https://api.4leads.net)
-     * @param array $headers global request headers
-     * @param string $version api version (configurable) - this is specific to the 4leads API
-     * @param array $path holds the segments of the url path
-     * @param array $curlOptions extra options to set during curl initialization
+     * @param array|null $headers global request headers
+     * @param string|null $version api version (configurable) - this is specific to the 4leads API
+     * @param array|null $path holds the segments of the url path
+     * @param array|null $curlOptions extra options to set during curl initialization
      */
-    protected function setupClient($host, $headers = null, $version = null, $path = null, $curlOptions = null)
+    protected function setupClient(
+        string  $host,
+        ?array  $headers = null,
+        ?string $version = null,
+        ?array  $path = null,
+        ?array  $curlOptions = null
+    ): void
     {
         $this->host = $host;
         $this->headers = $headers ?: [];
@@ -207,12 +217,12 @@ class FourLeadsAPI
     /**
      * Prepare response object.
      *
-     * @param resource $channel the curl resource
+     * @param \CurlHandle $channel the curl resource
      * @param string $content
      *
      * @return FourLeadsResponse|stdClass  response object
      */
-    private function parseResponse($channel, $content)
+    private function parseResponse(\CurlHandle $channel, $content)
     {
         $response = new FourLeadsResponse();
         $response->headerSize = curl_getinfo($channel, CURLINFO_HEADER_SIZE);
@@ -278,6 +288,8 @@ class FourLeadsAPI
         $response = $this->makeRequest('GET', $url, $queryParams);
         return $response;
     }
+
+
 
     /**
      * Test the API-KEY
@@ -355,8 +367,7 @@ class FourLeadsAPI
         $body->token = $token;
         $body->tagIds = $tagIds;
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('POST', $url, $body);
-        return $response;
+        return $this->makeRequest('POST', $url, $body);
     }
 
     /**
@@ -370,8 +381,7 @@ class FourLeadsAPI
         $body = new stdClass();
         $body->token = $token;
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('GET', $url, $body);
-        return $response;
+        return $this->makeRequest('GET', $url, $body);
     }
 
     /**
@@ -388,8 +398,7 @@ class FourLeadsAPI
         $body->token = $token;
         $body->tagIds = $tagIds;
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('DELETE', $url, $body);
-        return $response;
+        return $this->makeRequest('DELETE', $url, $body);
     }
 
     /**
@@ -409,9 +418,7 @@ class FourLeadsAPI
         $queryParams['searchString'] = $searchString;
 
         $url = $this->buildUrl($path, $queryParams);
-        $response = $this->makeRequest('GET', $url);
-
-        return $response;
+        return $this->makeRequest('GET', $url);
     }
 
     /**
@@ -431,9 +438,7 @@ class FourLeadsAPI
         $queryParams['searchString'] = $searchString;
 
         $url = $this->buildUrl($path, $queryParams);
-        $response = $this->makeRequest('GET', $url);
-
-        return $response;
+        return $this->makeRequest('GET', $url);
     }
 
     /**
@@ -453,9 +458,7 @@ class FourLeadsAPI
         $queryParams['searchString'] = $searchString;
 
         $url = $this->buildUrl($path, $queryParams);
-        $response = $this->makeRequest('GET', $url);
-
-        return $response;
+        return $this->makeRequest('GET', $url);
     }
 
     /**
@@ -463,9 +466,9 @@ class FourLeadsAPI
      * @param int $pageNum Which page of the results schould be retrieved (starting with 0)
      * @param int $pageSize Number of results per page (max 200)
      * @param string $searchString a basic searchstring matching name
-     * @return stdClass Response Object
+     * @return FourLeadsResponse Response Object
      */
-    public function getOptInCaseList(int $pageNum = 0, int $pageSize = 50, string $searchString = "")
+    public function getOptInCaseList(int $pageNum = 0, int $pageSize = 50, string $searchString = ""): FourLeadsResponse
     {
         $path = '/opt-in-cases';
 
@@ -475,9 +478,7 @@ class FourLeadsAPI
         $queryParams['searchString'] = $searchString;
 
         $url = $this->buildUrl($path, $queryParams);
-        $response = $this->makeRequest('GET', $url);
-
-        return $response;
+        return $this->makeRequest('GET', $url);
     }
 
     /**
@@ -494,8 +495,7 @@ class FourLeadsAPI
             $queryParams['embed'] = $embed;
         }
         $url = $this->buildUrl($path, $queryParams);
-        $response = $this->makeRequest('GET', $url);
-        return $response;
+        return $this->makeRequest('GET', $url);
     }
 
     /**
@@ -515,8 +515,7 @@ class FourLeadsAPI
             }
         }
         $url = $this->buildUrl($path, $queryParams);
-        $response = $this->makeRequest('GET', $url);
-        return $response;
+        return $this->makeRequest('GET', $url);
     }
 
 
@@ -529,8 +528,7 @@ class FourLeadsAPI
     {
         $path = '/contacts/' . urlencode($idOrEmail) . '/getTagList';
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('GET', $url);
-        return $response;
+        return $this->makeRequest('GET', $url);
     }
 
     /**
@@ -542,8 +540,7 @@ class FourLeadsAPI
     {
         $path = '/tags/' . urlencode($id);
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('GET', $url);
-        return $response;
+        return $this->makeRequest('GET', $url);
     }
 
     /**
@@ -555,8 +552,7 @@ class FourLeadsAPI
     {
         $path = '/opt-ins/' . urlencode($id);
         $url = $this->buildUrl($path);
-        $response = $this->makeRequest('GET', $url);
-        return $response;
+        return $this->makeRequest('GET', $url);
     }
 
     /**
@@ -1005,7 +1001,7 @@ class FourLeadsAPI
      *
      * @return FourLeadsAPI
      */
-    public function setCurlOptions(array $options)
+    public function setCurlOptions(array $options): static
     {
         $this->curlOptions = $options;
 

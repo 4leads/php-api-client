@@ -28,7 +28,7 @@ class GlobalField
      * @param int $globalFieldId field id
      * @param mixed $value The value to set
      * @param bool $doTriggers If true alle events which listen on field value changes will be fired if value changes.
-     * @param bool $overwrite if false only empty values will be overwriten. if true all values will be overwritten.
+     * @param bool $overwrite if false only empty values will be overwritten. if true all values will be overwritten.
      * @return bool true if field was added
      */
     public static function addToFieldList(array &$fieldList, int $globalFieldId, $value, bool $doTriggers = true, bool $overwrite = true)
