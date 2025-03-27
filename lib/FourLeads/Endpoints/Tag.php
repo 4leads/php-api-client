@@ -2,22 +2,17 @@
 
 namespace FourLeads\Endpoints;
 
-use FourLeads\FourLeadsAPI;
+
+use FourLeads\FourLeadsResponse;
 use stdClass;
 
-class Tag
+class Tag extends Endpoint
 {
     //modes to structure the tag list
     const TAG_LIST_MODE_DEFAULT = 0;
     const TAG_LIST_MODE_IDS = 1;
     const TAG_LIST_MODE_SIMPLE = 2;
 
-    private FourLeadsAPI $client;
-
-    public function __construct(FourLeadsAPI $client)
-    {
-        $this->client = $client;
-    }
 
     /**
      * Get a List of Tags.
@@ -27,7 +22,7 @@ class Tag
      * @param int $mode Defines how the list should be structured
      * @return stdClass Response Object
      */
-    public function getTagList(int $pageNum = 0, int $pageSize = 50, string $searchString = "", int $mode = self::TAG_LIST_MODE_DEFAULT): stdClass
+    public function list(int $pageNum = 0, int $pageSize = 50, string $searchString = "", int $mode = self::TAG_LIST_MODE_DEFAULT): FourLeadsResponse
     {
         $path = '/tags';
 
@@ -40,8 +35,8 @@ class Tag
         if (strlen($searchString)) {
             $queryParams['searchString'] = $searchString;
         }
-        $url = $this->client->buildUrl($path, $queryParams);
-        return $this->client->makeRequest('GET', $url);
+        $url = $this->buildUrl($path, $queryParams);
+        return $this->makeRequest('GET', $url);
     }
 
     /**
@@ -49,11 +44,11 @@ class Tag
      * @param int $id 4leads internal id of tag
      * @return stdClass Response Object
      */
-    public function getTag(int $id): stdClass
+    public function get(int $id): FourLeadsResponse
     {
         $path = '/tags/' . urlencode($id);
-        $url = $this->client->buildUrl($path);
-        return $this->client->makeRequest('GET', $url);
+        $url = $this->buildUrl($path);
+        return $this->makeRequest('GET', $url);
     }
 
     /**
@@ -61,13 +56,13 @@ class Tag
      * @param string $name The name of the Tag
      * @return stdClass Response Object
      */
-    public function createTag(string $name): stdClass
+    public function create(string $name): FourLeadsResponse
     {
         $path = '/tags';
         $body = new stdClass();
         $body->name = $name;
-        $url = $this->client->buildUrl($path);
-        return $this->client->makeRequest('POST', $url, $body);
+        $url = $this->buildUrl($path);
+        return $this->makeRequest('POST', $url, $body);
     }
 
     /**
@@ -76,13 +71,13 @@ class Tag
      * @param string $name The name of the Tag
      * @return stdClass Response Object
      */
-    public function updateTag(int $id, string $name): stdClass
+    public function update(int $id, string $name): FourLeadsResponse
     {
         $path = '/tags/' . urlencode($id);
         $body = new stdClass();
         $body->name = $name;
-        $url = $this->client->buildUrl($path);
-        return $this->client->makeRequest('PUT', $url, $body);
+        $url = $this->buildUrl($path);
+        return $this->makeRequest('PUT', $url, $body);
     }
 
     /**
@@ -90,10 +85,10 @@ class Tag
      * @param int $id the id of the tag
      * @return stdClass Response Object
      */
-    public function deleteTag(int $id): stdClass
+    public function delete(int $id): FourLeadsResponse
     {
         $path = '/tags/' . urlencode($id);
-        $url = $this->client->buildUrl($path);
-        return $this->client->makeRequest('DELETE', $url);
+        $url = $this->buildUrl($path);
+        return $this->makeRequest('DELETE', $url);
     }
 }

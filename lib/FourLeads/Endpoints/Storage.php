@@ -3,50 +3,46 @@
 namespace FourLeads\Endpoints;
 
 use FourLeads\FourLeadsAPI;
+use FourLeads\FourLeadsResponse;
 use stdClass;
 
-class Storage
+class Storage extends Endpoint
 {
-    private FourLeadsAPI $client;
 
-    public function __construct(FourLeadsAPI $client)
-    {
-        $this->client = $client;
-    }
 
     /**
      * Returns a list of all global values
-     * @return stdClass
+     * @return FourLeadsResponse
      */
-    public function getGlobalValuesList(): stdClass
+    public function list(): FourLeadsResponse
     {
         $path = '/storage';
-        $url = $this->client->buildUrl($path);
-        return $this->client->makeRequest('GET', $url);
+        $url = $this->buildUrl($path);
+        return $this->makeRequest('GET', $url);
     }
 
     /**
      * Returns a single global value based on its specific key
      * @param string $key The unique internal identifier of the global value
-     * @return stdClass
+     * @return FourLeadsResponse
      */
-    public function getGlobalValue(string $key): stdClass
+    public function get(string $key): FourLeadsResponse
     {
         $path = '/storage/' . urlencode($key);
-        $url = $this->client->buildUrl($path);
-        return $this->client->makeRequest('GET', $url);
+        $url = $this->buildUrl($path);
+        return $this->makeRequest('GET', $url);
     }
 
     /**
      * Retrieves the value associated with a specific key. If no key is provided, returns a list of results
      * @param string|null $key The unique internal identifier of the global value, or null to fetch all available values.
-     * @return stdClass
+     * @return FourLeadsResponse
      */
-    public function getGlobalValueValue(?string $key = null): stdClass
+    public function getValue(?string $key = null): FourLeadsResponse
     {
         $path = '/storage-values' . ($key ? '/' . urlencode($key) : '');
-        $url = $this->client->buildUrl($path);
-        return $this->client->makeRequest('GET', $url);
+        $url = $this->buildUrl($path);
+        return $this->makeRequest('GET', $url);
     }
 
     /**
@@ -54,12 +50,12 @@ class Storage
      * @param string $key
      * @param string $value
      * @param bool $overwrite
-     * @return stdClass
+     * @return FourLeadsResponse
      */
-    public function setGlobalValueValue(string $key, string $value, bool $overwrite): stdClass
+    public function setValue(string $key, string $value, bool $overwrite): FourLeadsResponse
     {
         $path = '/storage-values';
-        $url = $this->client->buildUrl($path);
+        $url = $this->buildUrl($path);
 
         $data = new stdClass();
         $data->fields = [
@@ -72,7 +68,7 @@ class Storage
         $data->options = new stdClass();
         $data->options->overwrite = $overwrite;
 
-        return $this->client->makeRequest('POST', $url, $data);
+        return $this->makeRequest('POST', $url, $data);
     }
 
     /**
@@ -82,13 +78,13 @@ class Storage
      *  - string $typeId The associated type identifier (refer to the Global Values class for valid type IDs)
      *  - string $key The internal unique identifier for this field
      *  - string $value The assigned value of the field
-     * @return stdClass
+     * @return FourLeadsResponse
      */
-    public function createGlobalValue(\stdClass $globalValue): stdClass
+    public function create(\stdClass $globalValue): FourLeadsResponse
     {
         $path = '/storage';
-        $url = $this->client->buildUrl($path);
-        return $this->client->makeRequest('POST', $url, $globalValue);
+        $url = $this->buildUrl($path);
+        return $this->makeRequest('POST', $url, $globalValue);
     }
 
     /**
@@ -101,24 +97,24 @@ class Storage
      *   - string $key The internal unique identifier for this field.
      *   - string $value The assigned value of the field.
      *
-     * @return stdClass
+     * @return FourLeadsResponse
      */
-    public function updateGlobalValue(string $key, \stdClass $globalValue): stdClass
+    public function update(string $key, \stdClass $globalValue): FourLeadsResponse
     {
         $path = '/storage/' . urlencode($key);
-        $url = $this->client->buildUrl($path);
-        return $this->client->makeRequest('PUT', $url, $globalValue);
+        $url = $this->buildUrl($path);
+        return $this->makeRequest('PUT', $url, $globalValue);
     }
 
     /**
      * Deletes a global value for a specific key
      * @param string $key
-     * @return stdClass
+     * @return FourLeadsResponse
      */
-    public function deleteGlobalValue(string $key): stdClass
+    public function delete(string $key): FourLeadsResponse
     {
         $path = '/storage/' . urlencode($key);
-        $url = $this->client->buildUrl($path);
-        return $this->client->makeRequest('DELETE', $url);
+        $url = $this->buildUrl($path);
+        return $this->makeRequest('DELETE', $url);
     }
 }

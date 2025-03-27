@@ -137,7 +137,7 @@ class FourLeadsAPI
      * @param array $queryParams an array of all the query parameters
      * @return string
      */
-    public function buildUrl($path, $queryParams = null)
+    public function buildUrl(string $path, $queryParams = null): string
     {
         if (isset($queryParams) && is_array($queryParams) && count($queryParams)) {
             $path .= '?' . http_build_query($queryParams);
@@ -151,12 +151,12 @@ class FourLeadsAPI
      *
      * @param string $method the HTTP verb
      * @param string $url the final url to call
-     * @param stdClass $body request body
-     * @param array $headers any additional request headers
+     * @param null $body request body
+     * @param null $headers any additional request headers
      *
-     * @return stdClass object
+     * @return FourLeadsResponse object
      */
-    public function makeRequest($method, $url, $body = null, $headers = null)
+    public function makeRequest($method, $url, $body = null, $headers = null): FourLeadsResponse
     {
         $channel = curl_init($url);
 
@@ -288,7 +288,6 @@ class FourLeadsAPI
     }
 
 
-
     /**
      * Test the API-KEY
      * @return bool
@@ -311,7 +310,7 @@ class FourLeadsAPI
      */
     public function getTagList(int $pageNum = 0, int $pageSize = 50, string $searchString = "", int $mode = Tag::TAG_LIST_MODE_DEFAULT): stdClass
     {
-        return $this->tags->getTagList($pageNum, $pageSize, $searchString, $mode);
+        return $this->tags->list($pageNum, $pageSize, $searchString, $mode);
     }
 
     /**
@@ -521,7 +520,7 @@ class FourLeadsAPI
      */
     public function getTag(int $id): stdClass
     {
-        return $this->tags->getTag($id);
+        return $this->tags->get($id);
     }
 
     /**
@@ -671,9 +670,9 @@ class FourLeadsAPI
      * @param string $name The name of the Tag
      * @return stdClass Response Object
      */
-    public function createTag(string $name): stdClass
+    public function createTag(string $name): FourLeadsResponse
     {
-        return $this->tags->createTag($name);
+        return $this->tags->create($name);
     }
 
     /**
@@ -682,9 +681,9 @@ class FourLeadsAPI
      * @param string $name The name of the Tag
      * @return stdClass Response Object
      */
-    public function updateTag(int $id, string $name): stdClass
+    public function updateTag(int $id, string $name): FourLeadsResponse
     {
-        return $this->tags->updateTag($id, $name);
+        return $this->tags->update($id, $name);
     }
 
     /**
@@ -692,9 +691,9 @@ class FourLeadsAPI
      * @param int $id the id of the tag
      * @return stdClass Response Object
      */
-    public function deleteTag(int $id): stdClass
+    public function deleteTag(int $id): FourLeadsResponse
     {
-        return $this->tags->deleteTag($id);
+        return $this->tags->delete($id);
     }
 
     /**
